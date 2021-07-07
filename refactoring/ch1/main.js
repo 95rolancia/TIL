@@ -4,6 +4,8 @@ function statement(invoice, plays) {
   const statementData = {};
   statementData.customer = invoice.customer;
   statementData.performances = invoice.performances.map(enrichPerformance);
+  statementData.totalAmount = totalAmount(statementData);
+  statementData.totalVolumeCredits = totalVolumeCredits(statementData);
   return renderPlainText(statementData, plays);
 
   function enrichPerformance(aPerformance) {
@@ -47,6 +49,23 @@ function statement(invoice, plays) {
     if ("comedy" === perf.play.type) result += Math.floor(perf.audience / 5);
     return result;
   }
+
+  function totalAmount(data) {
+    let result = 0;
+    for (let perf of data.performances) {
+      result += perf.amount;
+    }
+    return result;
+  }
+
+  function totalVolumeCredits(data) {
+    let result = 0;
+    for (let perf of data.performances) {
+      // 포인트 적립
+      result += perf.volumeCredits;
+    }
+    return result;
+  }
 }
 
 function renderPlainText(data, plays) {
@@ -56,27 +75,9 @@ function renderPlainText(data, plays) {
     result += `${perf.play.name}: ${usd(perf.amount)} (${perf.audience}석)\n`;
   }
 
-  result += `총액: ${usd(totalAmount())}\n`;
-  result += `적립 포인트: ${totalVolumeCredits()}점\n`;
+  result += `총액: ${usd(data.totalAmount)}\n`;
+  result += `적립 포인트: ${data.totalVolumeCredits}점\n`;
   return result;
-
-  // nested Function
-  function totalVolumeCredits() {
-    let result = 0;
-    for (let perf of data.performances) {
-      // 포인트 적립
-      result += perf.volumeCredits;
-    }
-    return result;
-  }
-  // 임시 함수명
-  function totalAmount() {
-    let result = 0;
-    for (let perf of data.performances) {
-      result += perf.amount;
-    }
-    return result;
-  }
 }
 
 function usd(aNumber) {
