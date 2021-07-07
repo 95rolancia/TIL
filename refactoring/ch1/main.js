@@ -10,6 +10,7 @@ function statement(invoice, plays) {
     const result = Object.assign({}, aPerformance); // 얕은 복사
     result.play = playFor(result);
     result.amount = amountFor(result);
+    result.volumeCredits = volumeCreditsFor(result);
     return result;
   }
 
@@ -38,6 +39,14 @@ function statement(invoice, plays) {
     }
     return result;
   }
+
+  function volumeCreditsFor(perf) {
+    let result = 0;
+    result += Math.max(perf.audience - 30, 0);
+    // 희극 관객 5명마다 추가 포인트를 제공
+    if ("comedy" === perf.play.type) result += Math.floor(perf.audience / 5);
+    return result;
+  }
 }
 
 function renderPlainText(data, plays) {
@@ -52,19 +61,11 @@ function renderPlainText(data, plays) {
   return result;
 
   // nested Function
-  function volumeCreditsFor(perf) {
-    let result = 0;
-    result += Math.max(perf.audience - 30, 0);
-    // 희극 관객 5명마다 추가 포인트를 제공
-    if ("comedy" === perf.play.type) result += Math.floor(perf.audience / 5);
-    return result;
-  }
-
   function totalVolumeCredits() {
     let result = 0;
     for (let perf of data.performances) {
       // 포인트 적립
-      result += volumeCreditsFor(perf);
+      result += perf.volumeCredits;
     }
     return result;
   }
