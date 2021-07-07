@@ -9,12 +9,7 @@ function statement(invoice, plays) {
     result += `${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
     totalAmount += amountFor(perf);
   }
-  let volumeCredits = 0;
-  for (let perf of invoice.performances) {
-    // 포인트 적립
-    volumeCredits += volumeCreditsFor(perf);
-  }
-
+  let volumeCredits = totalVolumeCredits();
   result += `총액: ${usd(totalAmount)}\n`;
   result += `적립 포인트: ${volumeCredits}점\n`;
   return result;
@@ -52,6 +47,15 @@ function statement(invoice, plays) {
     // 희극 관객 5명마다 추가 포인트를 제공
     if ("comedy" === playFor(perf).type) result += Math.floor(perf.audience / 5);
     return result;
+  }
+
+  function totalVolumeCredits() {
+    let volumeCredits = 0;
+    for (let perf of invoice.performances) {
+      // 포인트 적립
+      volumeCredits += volumeCreditsFor(perf);
+    }
+    return volumeCredits;
   }
 }
 
