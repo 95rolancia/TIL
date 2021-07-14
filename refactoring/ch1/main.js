@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 function statement(invoice, plays) {
   const statementData = {};
@@ -23,13 +23,13 @@ function statement(invoice, plays) {
   function amountFor(aPerformance) {
     let result = 0;
     switch (aPerformance.play.type) {
-      case "tragedy":
+      case 'tragedy':
         result = 40000;
         if (aPerformance.audience > 30) {
           result += 1000 * (aPerformance.audience - 30);
         }
         break;
-      case "comedy":
+      case 'comedy':
         result = 30000;
         if (aPerformance.audience > 20) {
           result += 10000 + 500 * (aPerformance.audience - 20);
@@ -46,25 +46,16 @@ function statement(invoice, plays) {
     let result = 0;
     result += Math.max(perf.audience - 30, 0);
     // 희극 관객 5명마다 추가 포인트를 제공
-    if ("comedy" === perf.play.type) result += Math.floor(perf.audience / 5);
+    if ('comedy' === perf.play.type) result += Math.floor(perf.audience / 5);
     return result;
   }
 
   function totalAmount(data) {
-    let result = 0;
-    for (let perf of data.performances) {
-      result += perf.amount;
-    }
-    return result;
+    return data.performances.reduce((total, p) => total + p.amount, 0);
   }
 
   function totalVolumeCredits(data) {
-    let result = 0;
-    for (let perf of data.performances) {
-      // 포인트 적립
-      result += perf.volumeCredits;
-    }
-    return result;
+    return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
   }
 }
 
@@ -81,16 +72,16 @@ function renderPlainText(data, plays) {
 }
 
 function usd(aNumber) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
   }).format(aNumber / 100);
 }
 
 async function start() {
-  const invoiceData = await fetch("data/invoices.json").then((res) => res.json());
-  const playData = await fetch("data/plays.json").then((res) => res.json());
+  const invoiceData = await fetch('data/invoices.json').then((res) => res.json());
+  const playData = await fetch('data/plays.json').then((res) => res.json());
   console.log(statement(invoiceData[0], playData));
 }
 start();
