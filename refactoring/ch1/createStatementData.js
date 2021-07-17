@@ -7,6 +7,7 @@ export default function createStatementData(invoice, plays) {
   return result;
 
   function enrichPerformance(aPerformance) {
+    const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));
     const result = Object.assign({}, aPerformance); // 얕은 복사
     result.play = playFor(result);
     result.amount = amountFor(result);
@@ -54,5 +55,12 @@ export default function createStatementData(invoice, plays) {
 
   function totalVolumeCredits(data) {
     return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
+  }
+}
+
+class PerformanceCalculator {
+  constructor(aPerformance, aPlay) {
+    this.performance = aPerformance;
+    this.play = aPlay;
   }
 }
