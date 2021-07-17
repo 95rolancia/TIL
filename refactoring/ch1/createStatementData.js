@@ -11,7 +11,7 @@ export default function createStatementData(invoice, plays) {
     const result = Object.assign({}, aPerformance); // 얕은 복사
     result.play = playFor(result);
     result.amount = calculator.amount;
-    result.volumeCredits = volumeCreditsFor(result);
+    result.volumeCredits = calculator.volumeCredits;
     return result;
   }
 
@@ -24,11 +24,7 @@ export default function createStatementData(invoice, plays) {
   }
 
   function volumeCreditsFor(perf) {
-    let result = 0;
-    result += Math.max(perf.audience - 30, 0);
-    // 희극 관객 5명마다 추가 포인트를 제공
-    if ('comedy' === perf.play.type) result += Math.floor(perf.audience / 5);
-    return result;
+    return new PerformanceCalculator(perf, playFor(perf)).volumeCredits;
   }
 
   function totalAmount(data) {
@@ -65,6 +61,14 @@ class PerformanceCalculator {
       default:
         throw new Error(`알 수 없는 장르 ${this.play.type}`);
     }
+    return result;
+  }
+
+  get volumeCredits() {
+    let result = 0;
+    result += Math.max(this.performance.audience - 30, 0);
+    // 희극 관객 5명마다 추가 포인트를 제공
+    if ('comedy' === this.play.type) result += Math.floor(this.performance.audience / 5);
     return result;
   }
 }
