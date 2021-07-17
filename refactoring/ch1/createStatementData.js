@@ -9,7 +9,7 @@ export default function createStatementData(invoice, plays) {
   function enrichPerformance(aPerformance) {
     const calculator = createPerformanceCalculator(aPerformance, playFor(aPerformance));
     const result = Object.assign({}, aPerformance); // 얕은 복사
-    result.play = playFor(result);
+    result.play = calculator.play;
     result.amount = calculator.amount;
     result.volumeCredits = calculator.volumeCredits;
     return result;
@@ -19,14 +19,6 @@ export default function createStatementData(invoice, plays) {
     return plays[aPerformance.playID];
   }
 
-  function amountFor(aPerformance) {
-    return new PerformanceCalculator(aPerformance, playFor(aPerformance)).amount;
-  }
-
-  function volumeCreditsFor(perf) {
-    return new PerformanceCalculator(perf, playFor(perf)).volumeCredits;
-  }
-
   function totalAmount(data) {
     return data.performances.reduce((total, p) => total + p.amount, 0);
   }
@@ -34,16 +26,16 @@ export default function createStatementData(invoice, plays) {
   function totalVolumeCredits(data) {
     return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
   }
-}
 
-function createPerformanceCalculator(aPerformance, aPlay) {
-  switch (aPlay.type) {
-    case 'tragedy':
-      return new TragedyCalculator(aPerformance, aPlay);
-    case 'comedy':
-      return new ComedyCalculator(aPerformance, aPlay);
-    default:
-      throw new Error(`알 수 없는 장르 ${aPlay.type}`);
+  function createPerformanceCalculator(aPerformance, aPlay) {
+    switch (aPlay.type) {
+      case 'tragedy':
+        return new TragedyCalculator(aPerformance, aPlay);
+      case 'comedy':
+        return new ComedyCalculator(aPerformance, aPlay);
+      default:
+        throw new Error(`알 수 없는 장르 ${aPlay.type}`);
+    }
   }
 }
 
